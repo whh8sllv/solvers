@@ -174,10 +174,47 @@ class Solver2_MI2():
                 res.append('0')
         return res
     
-solve3 = Solver2_MI2(128, 72, 10)
-x = bin(solve3.x)[2:]
+# solve3 = Solver2_MI2(128, 72, 10)
+# x = bin(solve3.x)[2:]
+# x_true = [i for i in x]
+# print(x_true)
+# x_recovered = solve3.recover_x()
+# print(x_recovered)
+# print(x_recovered.count('1'))  
+
+class Solver3():
+
+    def __init__(self, n, m, h, epsilon):
+        self.n = n
+        self.m = m
+        self.h = h
+        self.GM = get_module(self.n, self.m)
+        self.F = bin_list_to_number(generate_number(self.n, self.h))
+        self.G = bin_list_to_number(generate_number(self.n, self.h))
+        self.x = bin_list_to_number(generate_number(self.n, self.h))
+        self.y = bin_list_to_number(generate_number(self.n, self.h))
+        self.W = calculate_w(self.F, self.G, self.x, self.y, self.GM)
+        self.epsilon = epsilon
+
+    def recover_x(self):
+        recovered_res = []
+        for r in range(self.n):
+            d = (self.W - ((2**r * self.F) % self.GM)) % self.GM
+            ham_d = d.bit_count()
+            delta_r = (self.W).bit_count() - ham_d
+            wt_r = ((2**r * self.F) % self.GM).bit_count()
+            res = abs(delta_r - wt_r)
+            # print(res)
+            if res <= self.epsilon:
+                recovered_res.append('1')
+            else:
+                recovered_res.append('0')
+        return recovered_res
+    
+solve4 = Solver3(128, 72, 10, 10)
+x = bin(solve4.x)[2:]
 x_true = [i for i in x]
 print(x_true)
-x_recovered = solve3.recover_x()
+x_recovered = solve4.recover_x()
 print(x_recovered)
-print(x_recovered.count('1'))  
+print(x_recovered.count('1'))
