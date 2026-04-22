@@ -56,7 +56,7 @@ class Solver1():
                 res.append('0')
         return res
 
-# solve1 = Solver1(128, 72, 10)
+# solve1 = Solver1(128, 72, 50)
 # x = bin(solve1.x)[2:]
 # x_true = [i for i in x]
 # print(x_true)
@@ -103,7 +103,7 @@ class Solver2_MI1():
         res = []
         for r in range(self.n):
             delta_r = (self.W).bit_count() - ((self.W - ((2**r * self.F) % self.GM)) % self.GM).bit_count()
-            print(delta_r)
+            # print(delta_r)
             low_limit = self.get_lower_limit(r)
             # print(low_limit)
             if (r >= (self.n - self.m)) and (low_limit < delta_r <= (self.h + r - self.n + self.m)):
@@ -219,6 +219,117 @@ class Solver3():
 # print(x_recovered)
 # print(x_recovered.count('1'))
 
+class Solver4_modified():
+
+    def __init__(self, n, m, h):
+        self.n = n
+        self.m = m
+        self.h = h
+        self.GM = get_module(self.n, self.m)
+        self.F = bin_list_to_number(generate_number(self.n, self.h))
+        self.G = bin_list_to_number(generate_number(self.n, self.h))
+        self.x = bin_list_to_number(generate_number(self.n, self.h))
+        self.y = bin_list_to_number(generate_number(self.n, self.h))
+        self.W = calculate_w(self.F, self.G, self.x, self.y, self.GM)
+    
+    def recover_x(self):
+        counter = self.W
+        i_list, j_list = [], []
+        a = ['0'] * self.n
+        b = ['0'] * self.n
+        iterator = 0
+        while (a.count('1') + b.count('1') < 2*self.h) and iterator < 2 * self.n:
+            # print(iterator)
+            # i for F
+            m_i = None
+            need_i = None
+            for i in range(self.n):
+                if i in i_list:
+                    continue
+                delta_i = counter.bit_count() - ((counter - 2**i * self.F) % self.GM).bit_count()
+                if m_i is None or m_i <= delta_i:
+                    m_i = delta_i
+                    need_i = i
+            # j for G
+            m_j = None
+            need_j = None
+            for j in range(self.n):
+                if j in j_list:
+                    continue
+                delta_j = counter.bit_count() - ((counter - 2**j * self.G) % self.GM).bit_count()
+                if m_j is None or m_j <= delta_j:
+                    m_j = delta_j
+                    need_j = j
+            if m_i > m_j:
+                if a.count('1') == self.h:
+                    i_list.append(need_i)
+                else:    
+                    counter = (counter - 2**need_i * self.F) % self.GM
+                    a[need_i] = '1'
+                    i_list.append(need_i)
+            elif m_j > m_i:
+                if b.count('1') == self.h:
+                    j_list.append(j)
+                else:
+                    counter = (counter - 2**need_j * self.G) % self.GM
+                    b[need_j] = '1'
+                    j_list.append(need_j)
+            else:
+                z = random.choice(['i', 'j'])
+                if z == 'i':
+                    if a.count('1') == self.h:
+                        i_list.append(need_i)
+                    else:
+                        counter = (counter - 2**need_i * self.F) % self.GM
+                        a[need_i] = '1'
+                        i_list.append(need_i)
+                else:
+                    if b.count('1') == self.h:
+                        j_list.append(j)
+                    else:
+                        counter = (counter - 2**need_j * self.G) % self.GM
+                        b[need_j] = '1'
+                        j_list.append(need_j)
+            iterator += 1
+            print(iterator)
+            # print(f'counter = {counter}')
+        return a[::-1], b[::-1]
+
+# solve_new = Solver4_modified(1279, 512, 17)
+# x = bin(solve_new.x)[2:]
+# x_true = [i for i in x]
+# test = []
+# for i in range(len(x_true)):
+#     if x_true[i] == '1':
+#         test.append(i)
+
+# print()
+
+# tt1 = solve_new.recover_x()
+# print(test)
+# print(tt1[0].count('1'))
+# test2 = []
+# for i in range(len(tt1[0])):
+#     if tt1[0][i] == '1':
+#         test2.append(i)
+# print(test2)
+# y = bin(solve_new.y)[2:]
+# y_true = [i for i in y]
+# testy = []
+# for i in range(len(y_true)):
+#     if y_true[i] == '1':
+#         testy.append(i)
+# print(testy)
+# print('***')
+# print(tt1[1].count('1'))
+# test3 = []
+# for i in range(len(tt1[1])):
+#     if tt1[1][i] == '1':
+#         test3.append(i)
+# print(test3)
+
+
+
 class Solver4():
 
     def __init__(self, n, m, h):
@@ -231,66 +342,89 @@ class Solver4():
         self.x = bin_list_to_number(generate_number(self.n, self.h))
         self.y = bin_list_to_number(generate_number(self.n, self.h))
         self.W = calculate_w(self.F, self.G, self.x, self.y, self.GM)
-
-    def get_m(self, list):
-        list1 = [list[i][0] for i in range(len(list))]
-        list2 = [list[i][1] for i in range(len(list))]
-        if list1 == []:
-            return (0, 0)
-        mx = max(list1)
-        mx_index = list2[list1.index(mx)]
-        return (mx, mx_index)
-
-
-    def recover_x_y(self):
-        counter = self.W
-        i_index, j_index = [], []
-        a = ['0'] * self. n
-        b = ['0'] * self. n
-        iterations = 0
-        while (counter > 0 or ((a.count('1') + b.count('1')) < 2*self.h)) and iterations < 2*self.n:
-            delta_i_F = []
-            for i in range(self.n):
-                if i in i_index:
-                    continue
-                delta = counter.bit_count() - ((counter - ((2**i * self.F) % self.GM))% self.GM).bit_count()
-                delta_i_F.append((delta, i))
-            mx_i, mx_i_ind = self.get_m(delta_i_F)
-            delta_j_G = []
-            for j in range(self.n):
-                if j in j_index:
-                    continue
-                delta = counter.bit_count() - ((counter - ((2**j * self.G) % self.GM))% self.GM).bit_count()
-                delta_j_G.append((delta, j))
-            mx_j, mx_j_ind = self.get_m(delta_j_G)
-            
-            if mx_i > mx_j:
-                counter = (counter - ((2**mx_i_ind * self.F) % self.GM)) % self.GM
-                a[mx_i_ind] = '1'
-                i_index.append(mx_i_ind)
-            
-            elif mx_i < mx_j:
-                counter = (counter - ((2**mx_j_ind * self.G) % self.GM)) % self.GM
-                b[mx_j_ind] = '1'
-                j_index.append(mx_j_ind)
-
-            else: 
-                z = random.choice([mx_i_ind, mx_j_ind])
-                if z == mx_i_ind:
-                   counter = (counter - ((2**mx_i_ind * self.F) % self.GM)) % self.GM
-                   a[mx_i_ind] = '1'
-                   i_index.append(mx_i_ind)
-                else:
-                   counter = (counter - ((2**mx_j_ind * self.G) % self.GM)) % self.GM
-                   b[mx_j_ind] = '1'
-                   j_index.append(mx_j_ind)
-            print(iterations)
-            iterations += 1
-
-        return a, b
     
-solver4 = Solver4(128, 72, 10)
-print(bin(solver4.x))
-print(bin(solver4.y))
-print(solver4.recover_x_y()[0])
-print(solver4.recover_x_y()[1])
+    def recover_x(self):
+        counter = self.W
+        i_list, j_list = [], []
+        a = ['0'] * self.n
+        b = ['0'] * self.n
+        iterator = 0
+        while a.count('1') + b.count('1') < 2*self.h and iterator < 2 * self.n:
+            # print(iterator)
+            # i for F
+            m_i = None
+            need_i = None
+            for i in range(self.n):
+                if i in i_list:
+                    continue
+                delta_i = counter.bit_count() - ((counter - 2**i * self.F) % self.GM).bit_count()
+                if m_i is None or m_i <= delta_i:
+                    m_i = delta_i
+                    need_i = i
+            # j for G
+            m_j = None
+            need_j = None
+            for j in range(self.n):
+                if j in j_list:
+                    continue
+                delta_j = counter.bit_count() - ((counter - 2**j * self.G) % self.GM).bit_count()
+                if m_j is None or m_j <= delta_j:
+                    m_j = delta_j
+                    need_j = j
+            if m_i > m_j:
+                counter = (counter - 2**need_i * self.F) % self.GM
+                a[need_i] = '1'
+                i_list.append(need_i)
+            elif m_j > m_i:
+                counter = (counter - 2**need_j * self.G) % self.GM
+                b[need_j] = '1'
+                j_list.append(need_j)
+            else:
+                z = random.choice(['i', 'j'])
+                if z == 'i':
+                    counter = (counter - 2**need_i * self.F) % self.GM
+                    a[need_i] = '1'
+                    i_list.append(need_i)
+                else:
+                    counter = (counter - 2**need_j * self.G) % self.GM
+                    b[need_j] = '1'
+                    j_list.append(need_j)
+            iterator += 1
+            print(iterator)
+            # print(f'counter = {counter}')
+        return a[::-1], b[::-1]
+
+
+
+solve_new = Solver4(1279, 512, 17)
+x = bin(solve_new.x)[2:]
+x_true = [i for i in x]
+test = []
+for i in range(len(x_true)):
+    if x_true[i] == '1':
+        test.append(i)
+
+print()
+
+tt1 = solve_new.recover_x()
+print(test)
+print(tt1[0].count('1'))
+test2 = []
+for i in range(len(tt1[0])):
+    if tt1[0][i] == '1':
+        test2.append(i)
+print(test2)
+y = bin(solve_new.y)[2:]
+y_true = [i for i in y]
+testy = []
+for i in range(len(y_true)):
+    if y_true[i] == '1':
+        testy.append(i)
+print(testy)
+print('***')
+print(tt1[1].count('1'))
+test3 = []
+for i in range(len(tt1[1])):
+    if tt1[1][i] == '1':
+        test3.append(i)
+print(test3)
