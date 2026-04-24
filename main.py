@@ -1,4 +1,5 @@
 import random
+import time
 
 def generate_number(n, h):
     num = []
@@ -45,6 +46,7 @@ class Solver1():
         self.W = calculate_w(self.F, self.G, self.x, self.y, self.GM)
     
     def recover_x(self):
+        start_time = time.time()
         res = []
         for r in range(self.n):
             delta_r = (self.W).bit_count() - ((self.W - ((2**r * self.F) % self.GM)) % self.GM).bit_count()
@@ -54,15 +56,25 @@ class Solver1():
                 res.append('1')
             else:
                 res.append('0')
-        return res
+        end_time = time.time()
+        return res[::-1], abs(start_time - end_time)
 
-# solve1 = Solver1(128, 72, 50)
-# x = bin(solve1.x)[2:]
+# solve_new = Solver1(1279, 512, 17)
+# x = bin(solve_new.x)[2:]
 # x_true = [i for i in x]
-# print(x_true)
-# x_recovered = solve1.recover_x()
-# print(x_recovered)
-# print(x_recovered.count('1'))
+# test = []
+# for i in range(len(x_true)):
+#     if x_true[i] == '1':
+#         test.append(i)
+
+# tt1 = solve_new.recover_x()
+# print(test)
+# print(tt1.count('1'))
+# test2 = []
+# for i in range(len(tt1)):
+#     if tt1[i] == '1':
+#         test2.append(i)
+# print(test2)
 
 class Solver2_MI1():
 
@@ -160,6 +172,7 @@ class Solver2_MI2():
         return wt_r - MI
 
     def recover_x(self):
+        
         res = []
         for r in range(self.n):
             delta_r = (self.W).bit_count() - ((self.W - ((2**r * self.F) % self.GM)) % self.GM).bit_count()
@@ -396,35 +409,35 @@ class Solver4():
 
 
 
-solve_new = Solver4(1279, 512, 17)
-x = bin(solve_new.x)[2:]
-x_true = [i for i in x]
-test = []
-for i in range(len(x_true)):
-    if x_true[i] == '1':
-        test.append(i)
+# solve_new = Solver4(1279, 512, 17)
+# x = bin(solve_new.x)[2:]
+# x_true = [i for i in x]
+# test = []
+# for i in range(len(x_true)):
+#     if x_true[i] == '1':
+#         test.append(i)
 
-print()
+# print()
 
-tt1 = solve_new.recover_x()
-print(test)
-print(tt1[0].count('1'))
-test2 = []
-for i in range(len(tt1[0])):
-    if tt1[0][i] == '1':
-        test2.append(i)
-print(test2)
-y = bin(solve_new.y)[2:]
-y_true = [i for i in y]
-testy = []
-for i in range(len(y_true)):
-    if y_true[i] == '1':
-        testy.append(i)
-print(testy)
-print('***')
-print(tt1[1].count('1'))
-test3 = []
-for i in range(len(tt1[1])):
-    if tt1[1][i] == '1':
-        test3.append(i)
-print(test3)
+# tt1 = solve_new.recover_x()
+# print(test)
+# print(tt1[0].count('1'))
+# test2 = []
+# for i in range(len(tt1[0])):
+#     if tt1[0][i] == '1':
+#         test2.append(i)
+# print(test2)
+# y = bin(solve_new.y)[2:]
+# y_true = [i for i in y]
+# testy = []
+# for i in range(len(y_true)):
+#     if y_true[i] == '1':
+#         testy.append(i)
+# print(testy)
+# print('***')
+# print(tt1[1].count('1'))
+# test3 = []
+# for i in range(len(tt1[1])):
+#     if tt1[1][i] == '1':
+#         test3.append(i)
+# print(test3)
