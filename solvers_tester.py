@@ -38,20 +38,61 @@ def get_input():
         return solver_number, n, m, h, epsilon, sample
     return solver_number, n, m, h, sample
 
+def equality_test(list1, list2):
+    if list1 == list2:
+        return 1
+    else:
+        return 0
+
+def bit_accuracy_test(list1, list2):
+    true_bits = sum(x_true == x_calculated for x_true, x_calculated in zip (list1, list2))
+    return true_bits
+
+def bit1_accuracy_test(list1, list2):
+    true_bits1 = sum(x_true == x_calculated  == '1' for x_true, x_calculated in zip (list1, list2))
+    return true_bits1
+
+def bit0_accuracy_test(list1, list2):
+    true_bits0 = sum(x_true == x_calculated  == '0' for x_true, x_calculated in zip (list1, list2))
+    return true_bits0
+
+def bit1_extra_test(list1, list2):
+    extra_bits1 = sum((x_true == '0' and x_calculated == '1') for x_true, x_calculated in zip (list1, list2))
+    return extra_bits1 / list2.count('1') if list2.count('1') != 0 else 0
+
+def bit1_missing_test(list1, list2):
+    missing_bits1 = sum((x_true == '1' and x_calculated == '0') for x_true, x_calculated in zip (list1, list2))
+    return missing_bits1 / list1.count('1') if list1.count('1') != 0 else 0
+
 def run_tests():
     input_data = get_input()
 
     if input_data[0] == 1:
-        time_list = []
+        time_list, equality_list, bit_accuracy_list, ones_correct_list, zeros_correct_list, ones_extra_list, ones_missing_list = [], [], [], [], [], [], []
         for _ in range(input_data[4]):
             solver = Solver1(input_data[1], input_data[2], input_data[3])
-            x = bin(solver.x)[2:]
+            x = bin(solver.x)[2:].zfill(input_data[1])
             x_true = [i for i in x]
             res = solver.recover_x()
             x_solver = res[0]
             time = res[1]
             time_list.append(time)
-        return sum(time_list) / len(time_list), time_list
+            equality_list.append(equality_test(x_true, x_solver))
+            bit_accuracy_list.append(bit_accuracy_test(x_true, x_solver))
+            ones_correct_list.append(bit1_accuracy_test(x_true, x_solver))
+            zeros_correct_list.append(bit0_accuracy_test(x_true, x_solver))
+            ones_extra_list.append(bit1_extra_test(x_true, x_solver))
+            ones_missing_list.append(bit1_missing_test(x_true, x_solver))
+        avg_time = sum(time_list) / len(time_list)
+        equality = sum(equality_list)
+        success_probability = equality / input_data[4]
+        avg_bit_accuracy = sum(bit_accuracy_list) / len(bit_accuracy_list)
+        avg_ones_accuracy = sum(ones_correct_list) / len(ones_correct_list)
+        avg_zeros_accuracy = sum(zeros_correct_list) / len(zeros_correct_list)
+        avg_ones_extra = sum(ones_extra_list) / len(ones_extra_list)
+        avg_ones_missing = sum(ones_missing_list) / len(ones_missing_list)
+        return avg_time, equality, success_probability, avg_bit_accuracy, avg_ones_accuracy, avg_zeros_accuracy, avg_ones_extra, avg_ones_missing, input_data[1], input_data[3]
+
     
     if input_data[0] == 2:
         ...
@@ -65,5 +106,15 @@ def run_tests():
         ...
 
 test1 = run_tests()
-print(f'AVG time of Solver1 = {test1[0]}')
-print(test1[1])
+tests = ['AVG time', 'Recovered numbers', 'Success probability', 'AVG bit accuracy', 'AVG bit 1 accuracy',
+         'AVG bit 0 accuracy', 'Fraction of extra bits 1', 'Fraction of missing bits 1']
+
+for i in range(len(tests)):
+    if i == 3:
+        print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-2]} bits')
+    elif i == 4:
+        print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-1]} bits')        
+    elif i == 5:
+        print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-2] - test1[-1]} bits') 
+    else:
+        print(f'{tests[i]} by Solver#1: {test1[i]}')
