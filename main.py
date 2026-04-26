@@ -246,6 +246,7 @@ class Solver4_modified():
         self.W = calculate_w(self.F, self.G, self.x, self.y, self.GM)
     
     def recover_x(self):
+        start_time = time.time()
         counter = self.W
         i_list, j_list = [], []
         a = ['0'] * self.n
@@ -304,9 +305,8 @@ class Solver4_modified():
                         b[need_j] = '1'
                         j_list.append(need_j)
             iterator += 1
-            print(iterator)
-            # print(f'counter = {counter}')
-        return a[::-1], b[::-1]
+        end_time = time.time()
+        return a[::-1], b[::-1], end_time - start_time
 
 # solve_new = Solver4_modified(1279, 512, 17)
 # x = bin(solve_new.x)[2:]
@@ -357,14 +357,13 @@ class Solver4():
         self.W = calculate_w(self.F, self.G, self.x, self.y, self.GM)
     
     def recover_x(self):
+        start_time = time.time()
         counter = self.W
         i_list, j_list = [], []
         a = ['0'] * self.n
         b = ['0'] * self.n
         iterator = 0
         while a.count('1') + b.count('1') < 2*self.h and iterator < 2 * self.n:
-            # print(iterator)
-            # i for F
             m_i = None
             need_i = None
             for i in range(self.n):
@@ -374,7 +373,6 @@ class Solver4():
                 if m_i is None or m_i <= delta_i:
                     m_i = delta_i
                     need_i = i
-            # j for G
             m_j = None
             need_j = None
             for j in range(self.n):
@@ -403,9 +401,8 @@ class Solver4():
                     b[need_j] = '1'
                     j_list.append(need_j)
             iterator += 1
-            print(iterator)
-            # print(f'counter = {counter}')
-        return a[::-1], b[::-1]
+        end_time = time.time()
+        return a[::-1], b[::-1], end_time - start_time
 
 
 

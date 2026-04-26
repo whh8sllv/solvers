@@ -27,7 +27,7 @@ def get_input():
     '4 --- Solver3 \n'
     '5 --- Solver4 \n'
     '6 --- Solver4_modified')
-    solver_number = int(input('Your choice is Solver#'))
+    solver_number = int(input('Your choice is '))
     print('Add your input data')
     n = int(input('n = '))
     m = int(input('m = '))
@@ -101,20 +101,171 @@ def run_tests():
     if input_data[0] == 4:
         ...
     if input_data[0] == 5:
-        ...
+        equality_list_x, bit_accuracy_list_x, ones_correct_list_x, zeros_correct_list_x, ones_extra_list_x, ones_missing_list_x = [], [], [], [], [], []
+        equality_list_y, bit_accuracy_list_y, ones_correct_list_y, zeros_correct_list_y, ones_extra_list_y, ones_missing_list_y = [], [], [], [], [], []
+        time_list = []
+        for _ in range(input_data[4]):
+            solver = Solver4(input_data[1], input_data[2], input_data[3])
+            x = bin(solver.x)[2:].zfill(input_data[1])
+            y = bin(solver.y)[2:].zfill(input_data[1])
+            x_true = [i for i in x]
+            y_true = [i for i in y]
+            res = solver.recover_x()
+            x_solver, y_solver, time = res[0], res[1], res[2]
+            time_list.append(time)
+            equality_list_x.append(equality_test(x_true, x_solver))
+            bit_accuracy_list_x.append(bit_accuracy_test(x_true, x_solver))
+            ones_correct_list_x.append(bit1_accuracy_test(x_true, x_solver))
+            zeros_correct_list_x.append(bit0_accuracy_test(x_true, x_solver))
+            ones_extra_list_x.append(bit1_extra_test(x_true, x_solver))
+            ones_missing_list_x.append(bit1_missing_test(x_true, x_solver))
+            equality_list_y.append(equality_test(y_true, y_solver))
+            bit_accuracy_list_y.append(bit_accuracy_test(y_true, y_solver))
+            ones_correct_list_y.append(bit1_accuracy_test(y_true, y_solver))
+            zeros_correct_list_y.append(bit0_accuracy_test(y_true, y_solver))
+            ones_extra_list_y.append(bit1_extra_test(y_true, y_solver))
+            ones_missing_list_y.append(bit1_missing_test(y_true, y_solver))
+        avg_time = sum(time_list) / len(time_list)
+
+        equality_x = sum(equality_list_x)
+        success_probability_x = equality_x / input_data[4]
+        avg_bit_accuracy_x = sum(bit_accuracy_list_x) / len(bit_accuracy_list_x)
+        avg_ones_accuracy_x = sum(ones_correct_list_x) / len(ones_correct_list_x)
+        avg_zeros_accuracy_x = sum(zeros_correct_list_x) / len(zeros_correct_list_x)
+        avg_ones_extra_x = sum(ones_extra_list_x) / len(ones_extra_list_x)
+        avg_ones_missing_x = sum(ones_missing_list_x) / len(ones_missing_list_x)
+ 
+        equality_y = sum(equality_list_y)
+        success_probability_y = equality_y / input_data[4]
+        avg_bit_accuracy_y = sum(bit_accuracy_list_y) / len(bit_accuracy_list_y)
+        avg_ones_accuracy_y = sum(ones_correct_list_y) / len(ones_correct_list_y)
+        avg_zeros_accuracy_y = sum(zeros_correct_list_y) / len(zeros_correct_list_y)
+        avg_ones_extra_y = sum(ones_extra_list_y) / len(ones_extra_list_y)
+        avg_ones_missing_y = sum(ones_missing_list_y) / len(ones_missing_list_y)
+
+        x_data = [equality_x, success_probability_x, avg_bit_accuracy_x, avg_ones_accuracy_x, avg_zeros_accuracy_x, avg_ones_extra_x, avg_ones_missing_x]
+        y_data = [equality_y, success_probability_y, avg_bit_accuracy_y, avg_ones_accuracy_y, avg_zeros_accuracy_y, avg_ones_extra_y, avg_ones_missing_y]
+
+        return avg_time, x_data, y_data, input_data[1], input_data[3]
+
     if input_data[0] == 6:
-        ...
+        equality_list_x, bit_accuracy_list_x, ones_correct_list_x, zeros_correct_list_x, ones_extra_list_x, ones_missing_list_x = [], [], [], [], [], []
+        equality_list_y, bit_accuracy_list_y, ones_correct_list_y, zeros_correct_list_y, ones_extra_list_y, ones_missing_list_y = [], [], [], [], [], []
+        time_list = []
+        for _ in range(input_data[4]):
+            solver = Solver4_modified(input_data[1], input_data[2], input_data[3])
+            x = bin(solver.x)[2:].zfill(input_data[1])
+            y = bin(solver.y)[2:].zfill(input_data[1])
+            x_true = [i for i in x]
+            y_true = [i for i in y]
+            res = solver.recover_x()
+            x_solver, y_solver, time = res[0], res[1], res[2]
+            time_list.append(time)
+            equality_list_x.append(equality_test(x_true, x_solver))
+            bit_accuracy_list_x.append(bit_accuracy_test(x_true, x_solver))
+            ones_correct_list_x.append(bit1_accuracy_test(x_true, x_solver))
+            zeros_correct_list_x.append(bit0_accuracy_test(x_true, x_solver))
+            ones_extra_list_x.append(bit1_extra_test(x_true, x_solver))
+            ones_missing_list_x.append(bit1_missing_test(x_true, x_solver))
+            equality_list_y.append(equality_test(y_true, y_solver))
+            bit_accuracy_list_y.append(bit_accuracy_test(y_true, y_solver))
+            ones_correct_list_y.append(bit1_accuracy_test(y_true, y_solver))
+            zeros_correct_list_y.append(bit0_accuracy_test(y_true, y_solver))
+            ones_extra_list_y.append(bit1_extra_test(y_true, y_solver))
+            ones_missing_list_y.append(bit1_missing_test(y_true, y_solver))
+        avg_time = sum(time_list) / len(time_list)
 
-test1 = run_tests()
-tests = ['AVG time', 'Recovered numbers', 'Success probability', 'AVG bit accuracy', 'AVG bit 1 accuracy',
-         'AVG bit 0 accuracy', 'Fraction of extra bits 1', 'Fraction of missing bits 1']
+        equality_x = sum(equality_list_x)
+        success_probability_x = equality_x / input_data[4]
+        avg_bit_accuracy_x = sum(bit_accuracy_list_x) / len(bit_accuracy_list_x)
+        avg_ones_accuracy_x = sum(ones_correct_list_x) / len(ones_correct_list_x)
+        avg_zeros_accuracy_x = sum(zeros_correct_list_x) / len(zeros_correct_list_x)
+        avg_ones_extra_x = sum(ones_extra_list_x) / len(ones_extra_list_x)
+        avg_ones_missing_x = sum(ones_missing_list_x) / len(ones_missing_list_x)
+ 
+        equality_y = sum(equality_list_y)
+        success_probability_y = equality_y / input_data[4]
+        avg_bit_accuracy_y = sum(bit_accuracy_list_y) / len(bit_accuracy_list_y)
+        avg_ones_accuracy_y = sum(ones_correct_list_y) / len(ones_correct_list_y)
+        avg_zeros_accuracy_y = sum(zeros_correct_list_y) / len(zeros_correct_list_y)
+        avg_ones_extra_y = sum(ones_extra_list_y) / len(ones_extra_list_y)
+        avg_ones_missing_y = sum(ones_missing_list_y) / len(ones_missing_list_y)
 
-for i in range(len(tests)):
-    if i == 3:
-        print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-2]} bits')
-    elif i == 4:
-        print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-1]} bits')        
-    elif i == 5:
-        print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-2] - test1[-1]} bits') 
-    else:
-        print(f'{tests[i]} by Solver#1: {test1[i]}')
+        x_data = [equality_x, success_probability_x, avg_bit_accuracy_x, avg_ones_accuracy_x, avg_zeros_accuracy_x, avg_ones_extra_x, avg_ones_missing_x]
+        y_data = [equality_y, success_probability_y, avg_bit_accuracy_y, avg_ones_accuracy_y, avg_zeros_accuracy_y, avg_ones_extra_y, avg_ones_missing_y]
+
+        return avg_time, x_data, y_data, input_data[1], input_data[3]
+
+'''Solver 1'''
+# tests = ['AVG time', 'Recovered numbers', 'Success probability', 'AVG bit accuracy', 'AVG bit 1 accuracy',
+#          'AVG bit 0 accuracy', 'Fraction of extra bits 1', 'Fraction of missing bits 1']
+# test1 = run_tests()
+# for i in range(len(tests)):
+#     if i == 3:
+#         print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-2]} bits')
+#     elif i == 4:
+#         print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-1]} bits')        
+#     elif i == 5:
+#         print(f'{tests[i]} by Solver#1: {test1[i]} bits from {test1[-2] - test1[-1]} bits') 
+#     else:
+#         print(f'{tests[i]} by Solver#1: {test1[i]}')
+
+'''Solver 4'''
+# tests = ['Recovered numbers', 'Success probability', 'AVG bit accuracy', 'AVG bit 1 accuracy',
+#          'AVG bit 0 accuracy', 'Fraction of extra bits 1', 'Fraction of missing bits 1']
+# test5 = run_tests()
+# x_data = test5[1]
+# y_data = test5[2]
+# print(f'AVG time by Solver#4: {test5[0]}')
+# print()
+# print('***recovering x report***')
+# for i in range(len(tests)):
+#     if i == 2:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]} bits from {test5[3]} bits')
+#     elif i == 3:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]} bits from {test5[-1]} bits')        
+#     elif i == 4:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]} bits from {test5[3] - test5[-1]} bits') 
+#     else:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]}')
+# print()
+# print('***recovering y report***')
+# for i in range(len(tests)):
+#     if i == 2:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]} bits from {test5[3]} bits')
+#     elif i == 3:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]} bits from {test5[-1]} bits')        
+#     elif i == 4:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]} bits from {test5[3] - test5[-1]} bits') 
+#     else:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]}')
+
+'''Solver 4 modified'''
+# tests = ['Recovered numbers', 'Success probability', 'AVG bit accuracy', 'AVG bit 1 accuracy',
+#          'AVG bit 0 accuracy', 'Fraction of extra bits 1', 'Fraction of missing bits 1']
+# test5 = run_tests()
+# x_data = test5[1]
+# y_data = test5[2]
+# print(f'AVG time by Solver#4: {test5[0]}')
+# print()
+# print('***recovering x report***')
+# for i in range(len(tests)):
+#     if i == 2:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]} bits from {test5[3]} bits')
+#     elif i == 3:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]} bits from {test5[-1]} bits')        
+#     elif i == 4:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]} bits from {test5[3] - test5[-1]} bits') 
+#     else:
+#         print(f'{tests[i]} by Solver#4: {x_data[i]}')
+# print()
+# print('***recovering y report***')
+# for i in range(len(tests)):
+#     if i == 2:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]} bits from {test5[3]} bits')
+#     elif i == 3:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]} bits from {test5[-1]} bits')        
+#     elif i == 4:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]} bits from {test5[3] - test5[-1]} bits') 
+#     else:
+#         print(f'{tests[i]} by Solver#4: {y_data[i]}')
