@@ -94,27 +94,28 @@ class Solver2_MI1():
         for i in range(self.n):
             if i == r:
                 continue
-            num1 = (2**r * self.F) % self.GM
-            num2 = (2**i * self.F) % self.GM
+            num1 = (pow(2, r) * self.F) % self.GM
+            num2 = (pow(2, i) * self.F) % self.GM
             ham_i.append((num1 & num2).bit_count())
         sigma_F = max(ham_i)
         ham_j = []
         for j in range(self.n):
-            num1 = (2**r * self.F) % self.GM
-            num2 = (2**j * self.G) % self.GM
+            num1 = (pow(2, r) * self.F) % self.GM
+            num2 = (pow(2, j) * self.G) % self.GM
             ham_j.append((num1 & num2).bit_count())
         sigma_G = max(ham_j)
         return ((self.h - 1) * sigma_F + self.h * sigma_G)
     
     def get_lower_limit(self, r):
         MI = self.calculate_MI(r)
-        wt_r = ((2**r * self.F) % self.GM).bit_count()
+        wt_r = ((pow(2, r) * self.F) % self.GM).bit_count()
         return wt_r - MI
 
     def recover_x(self):
+        start_time = time.time()
         res = []
         for r in range(self.n):
-            delta_r = (self.W).bit_count() - ((self.W - ((2**r * self.F) % self.GM)) % self.GM).bit_count()
+            delta_r = (self.W).bit_count() - ((self.W - ((pow(2, r) * self.F) % self.GM)) % self.GM).bit_count()
             # print(delta_r)
             low_limit = self.get_lower_limit(r)
             # print(low_limit)
@@ -124,7 +125,8 @@ class Solver2_MI1():
                 res.append('1')
             else:
                 res.append('0')
-        return res
+        end_time = time.time()
+        return res[::-1], end_time - start_time
 
 # solve2 = Solver2_MI1(128, 72, 10)
 # x = bin(solve2.x)[2:]
@@ -153,14 +155,14 @@ class Solver2_MI2():
         for i in range(self.n):
             if i == r:
                 continue
-            num1 = (2**r * self.F) % self.GM
-            num2 = (2**i * self.F) % self.GM
+            num1 = (pow(2, r) * self.F) % self.GM
+            num2 = (pow(2, i) * self.F) % self.GM
             ham_i.append((num1 & num2).bit_count())
         sigma_F = max(ham_i)
         ham_j = []
         for j in range(self.n):
-            num1 = (2**r * self.F) % self.GM
-            num2 = (2**j * self.G) % self.GM
+            num1 = (pow(2, r) * self.F) % self.GM
+            num2 = (pow(2, j) * self.G) % self.GM
             ham_j.append((num1 & num2).bit_count())
         sigma_G = max(ham_j)
         sigma_max = max(sigma_F, sigma_G)
@@ -168,14 +170,14 @@ class Solver2_MI2():
     
     def get_lower_limit(self, r):
         MI = self.calculate_MI(r)
-        wt_r = ((2**r * self.F) % self.GM).bit_count()
+        wt_r = ((pow(2, r) * self.F) % self.GM).bit_count()
         return wt_r - MI
 
     def recover_x(self):
-        
+        start_time = time.time()
         res = []
         for r in range(self.n):
-            delta_r = (self.W).bit_count() - ((self.W - ((2**r * self.F) % self.GM)) % self.GM).bit_count()
+            delta_r = (self.W).bit_count() - ((self.W - ((pow(2, r) * self.F) % self.GM)) % self.GM).bit_count()
             # print(delta_r)
             low_limit = self.get_lower_limit(r)
             print(low_limit)
@@ -185,7 +187,8 @@ class Solver2_MI2():
                 res.append('1')
             else:
                 res.append('0')
-        return res
+        end_time = time.time()
+        return res[::-1], end_time - start_time
     
 # solve3 = Solver2_MI2(128, 72, 10)
 # x = bin(solve3.x)[2:]
@@ -210,6 +213,7 @@ class Solver3():
         self.epsilon = epsilon
 
     def recover_x(self):
+        start_time = time.time()
         recovered_res = []
         for r in range(self.n):
             d = (self.W - ((2**r * self.F) % self.GM)) % self.GM
@@ -222,7 +226,8 @@ class Solver3():
                 recovered_res.append('1')
             else:
                 recovered_res.append('0')
-        return recovered_res
+        end_time = time.time()
+        return recovered_res[::-1], end_time - start_time
     
 # solve4 = Solver3(128, 72, 10, 10)
 # x = bin(solve4.x)[2:]
